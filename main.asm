@@ -51,6 +51,11 @@ testdr:
 
 .globl	process
 process:
+	slt	$t0, $a0, $s7		# Test that we aren't past last address
+	bneq	$t0, $zero, p_start	# If we aren't, begin the routine
+	jr	$ra			# If we are past, return without action
+
+  p_start:
 	addi	$sp, $sp, -16		# Make space in the stack
 	sw	$ra, 12($sp)		# Push return address
 	sw	$s0, 8($sp)		# Push $s0
