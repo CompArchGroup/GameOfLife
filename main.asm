@@ -52,7 +52,7 @@ testdr:
 .globl	process
 process:
 	slt	$t0, $a0, $s7		# Test that we aren't past last address
-	bneq	$t0, $zero, p_start	# If we aren't, begin the routine
+	bne	$t0, $zero, p_start	# If we aren't, begin the routine
 	jr	$ra			# If we are past, return without action
 
   p_start:
@@ -67,35 +67,35 @@ process:
 
   p_up:
 	jal	testup			# Test above
-	bneq	$v0, $zero, p_upleft	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_upleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upleft:
 	jal	testul			# Test above
-	bneq	$v0, $zero, p_left	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_left	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_left:
 	jal	testleft		# Test above
-	bneq	$v0, $zero, p_downleft	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_downleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downleft:
 	jal	testdl			# Test above
-	bneq	$v0, $zero, p_down	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_down	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_down:
 	jal	testdown		# Test above
-	bneq	$v0, $zero, p_downright	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_downright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downright:
 	jal	testdr			# Test above
-	bneq	$v0, $zero, p_right	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_right	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_right:
 	jal	testright		# Test above
-	bneq	$v0, $zero, p_upright	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_upright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upright:
 	jal	testur			# Test above
-	bneq	$v0, $zero, p_endtest	# Branch to avoid adding to alive
+	bne	$v0, $zero, p_endtest	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
 
   p_endtest:
@@ -114,7 +114,7 @@ process:
 	j	p_exit
   p_dead:
 	li	$t0, 3			# Load 3 into a temporary value
-	bneq	$s0, $t0, p_exit	# Stay dead if not 3 neighbors
+	bne	$s0, $t0, p_exit	# Stay dead if not 3 neighbors
   p_procreate:
 	li	$s3, 1			# Procreate if exactly 3 live neighbors
 
