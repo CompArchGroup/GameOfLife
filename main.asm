@@ -177,7 +177,7 @@ process:
 	lw	$s1, 4($sp)		# Pop $s1
 	lw	$s0, 8($sp)		# Pop $s0
 	lw	$ra, 12($sp)		# Pop $s0
-	addi	$sp, 16			# Return the stack to its previous state
+	addi	$sp, $sp, 16		# Return the stack to its previous state
 	jr	$ra			# Jump back to the return address
 
 # 
