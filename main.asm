@@ -1,8 +1,12 @@
 # main.asm
 
 .data
-lwidth:	.word	80		# Width of each line
-grid:	.space	400		# Space for the grid (80x50)
+file:		.asciiz		"grid.txt"		# file to be read 
+lwidth:		.word		80			# Width of each line
+grid:		.space		4000			# Space for the grid (80x50)
+buffer:		.space		4098			# stores data read
+gridSize:	.word		4000			# size of grid
+bufferSize:	.word		4098			# size of buffer
 
 .text
 	j	main
@@ -12,6 +16,55 @@ grid:	.space	400		# Space for the grid (80x50)
 # Reads in a grid pattern from a file.
 #
 readgrid:
+  # open file
+	li   	$v0, 13       		# open file syscall
+	la   	$a0, file      		# board file name
+	li   	$a1, 0        		# flags
+	li   	$a2, 0		  	# open for reading
+	syscall               		# open the file
+	move 	$s6, $v0      		# save the file descriptor 
+
+  # read from file
+	li   	$v0, 14      	 	# read from file syscall
+	move 	$a0, $s6      		# file descriptor 
+	la   	$a1, buffer   		# address of buffer to store read data
+	lw   	$a2, bufferSize		# max buffer length
+	syscall            		# read from file
+	
+  # sifting through buffer
+	move	$s0, $zero		# index of buffer
+	lw	$s1, bufferSize		# $s1 stores size of buffer
+	
+	lw	$a1, gridSize		# #a1 size of array
+	move	$a2, $zero		# index of grid (i)
+	
+  # initialize grid with values from text file
+  r_loop:  
+	bge 	$s0, $s1, r_exit	# if $s0 >= bufferSize, exit loop
+	bge 	$a2, $a1, r_exit	# if $a2 >= grid size, exit loop
+	
+	la	$a0, grid		# load address of grid into $a0
+	lbu 	$s2, buffer($s0)	# load byte from buffer into $s2
+
+  r_if1:
+	bne	$s2, '@', r_if2		# if cell is not alive, go to second if statement
+	
+	li	$t0, '1'		# $t0 = alive cell
+	sb	$t0, grid($a2)		# store alive cell in grid[i]
+	addiu	$a2, $a2, 1		# i++
+	
+  r_if2:	
+	bne	$s2, ' ', r_inc		# if cell not dead, go to inc
+
+	li	$t0, '0'		# $t0 = dead cell
+	sb	$t0, grid($a2)		# store dead cell in grid[i]
+	addiu	$a2, $a2, 1		# i++
+
+  r_inc:
+	addiu 	$s0, $s0, 1		# go to next byte in buffer
+	j	r_loop			# iterate through loop again
+
+  r_exit:	
 	jr	$ra
 
 #
