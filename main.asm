@@ -177,7 +177,7 @@ process:
 	lw	$s1, 4($sp)		# Pop $s1
 	lw	$s0, 8($sp)		# Pop $s0
 	lw	$ra, 12($sp)		# Pop $s0
-	addi	$sp, 16			# Return the stack to its previous state
+	addi	$sp, $sp, 16		# Return the stack to its previous state
 	jr	$ra			# Jump back to the return address
 
 # 
@@ -189,7 +189,8 @@ process:
 main:
 	lw	$s5, lwidth	# Load line width to $s8
 	la	$s6, grid	# Load the first grid address to $s6
-	add	$s6, $s7, 400	# Put the first address after the grid in $s7
+	lw	$t0, gridSize	# Load the size of the grid to $t0
+	add	$s6, $s7, $t0	# Put the first address after the grid in $s7
 
 	jal	process
 
