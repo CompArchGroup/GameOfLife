@@ -141,8 +141,8 @@ testup:
 	la	$t1, lwidth		#acquire line width
 
 	slt	$t2, $t0, $t1		#check if location < line width
-	beq	$t2, $zero, checkUp	#branch to check above position
-	lb	$v0, 0			#up is not alive
+	beq	$t2, '0', checkUp	#branch to check above position
+	li	$v0, 0			#up is not alive
 	j	upExit			#jump to end of subroutine
 
 checkUp:
@@ -160,8 +160,8 @@ testdown:
 
 	sub	$t3, $t2, $t1		#subtract and see if position is less
 	slt	$t4, $t0, $t3		#than the grid size minus line width
-	bne	$t4, $zero, checkDown	#branch if position is not in last line 					 of grid
-	lb	$v0, 0			#down is not alive
+	bne	$t4, '0', checkDown	#branch if position is not in last line 					 of grid
+	li	$v0, 0			#down is not alive
 	j	downExit		#jump to exit of subroutine
 
 checkDown:
@@ -178,8 +178,8 @@ testleft:
 	
 	div	$t0, $t1		#modulus of current position to check if
 	mfhi	$t3			#left is in grid
-	bne	$t3, $zero, checkLeft		
-	lb	$v0, 0			#left does not exist/is not alive
+	bne	$t3, '0', checkLeft		
+	li	$v0, 0			#left does not exist/is not alive
 	j	leftExit
 
 checkLeft:
@@ -197,7 +197,7 @@ testright:
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
         bne     $t3, 79, checkLeft           
-        lb      $v0, 0                  #right does not exist/is not alive
+        li      $v0, 0                  #right does not exist/is not alive
         j       rightExit
 
 checkRight:
@@ -214,26 +214,26 @@ testul:
 
 	div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
-        bne     $t3, $zero, ulLeftExists
-        lb      $t2, 0                  #left does not exist
+        bne     $t3, '0', ulLeftExists
+        li      $t2, 0                  #left does not exist
 	j	ulUpCheck		#jump to checking above current pos.
 
 ulLeftExists:
-	lb	$t2, 1			#left exists
+	li	$t2, 1			#left exists
 	
 ulUpCheck:
 	slt     $t3, $t0, $t1           #check if location < line width
-        beq     $t3, $zero, ulUpExists  #branch to check above position
-        lb      $t4, 0                  #up is not alive
+        beq     $t3, '0', ulUpExists  #branch to check above position
+        li      $t4, 0                  #up is not alive
         j       contUl                  #jump to end of subroutine
 
 ulUpExists:
-	lb	$t4, 1			#up exists
+	li	$t4, 1			#up exists
 
 contUl:
 	and	$t3, $t2, $t4		#if above and left exist, $t3 = 1
-	bne	$t3, $zero, checkUl	#and ul position exists
-	lb	$v0, 0			#ul does not exist/ not alive
+	bne	$t3, '0', checkUl	#and ul position exists
+	li	$v0, 0			#ul does not exist/ not alive
 	j	ulExit			#jump to exit
 
 checkUl:
@@ -251,25 +251,25 @@ testur:
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
         bne     $t3, 79, rightExists	#branches if pos. to right of $t0 exists
-        lb      $t2, 0                  #right does not exist
+        li      $t2, 0                  #right does not exist
         j       urUpCheck		#jump to checking above $t0
 
 rightExists:
-        lb      $t2, 1                  #right exists
+        li      $t2, 1                  #right exists
 
 urUpCheck:
         slt     $t3, $t0, $t1           #check if location < line width
-        beq     $t3, $zero, urUpExists  #branch to check above position
-        lb      $t4, 0                  #up is not alive
+        beq     $t3, '0', urUpExists  #branch to check above position
+        li      $t4, 0                  #up is not alive
         j       contUr                  #jump to continuation of testing ur
 
 urUpExists:
-        lb      $t4, 1                  #up exists
+        li      $t4, 1                  #up exists
 
 contUr:
         and     $t3, $t2, $t4		#verifies both up and right exist
-        bne     $t3, $zero, checkUr	#branch if up and right exist
-        lb      $v0, 0			#ur does not exist
+        bne     $t3, '0', checkUr	#branch if up and right exist
+        li      $v0, 0			#ur does not exist
         j       urExit			#jump to exit
 
 checkUr:
@@ -287,18 +287,18 @@ testdl:
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
-        bne     $t3, $zero, dlLeftExists
-        lb      $t2, 0                  #left does not exist
+        bne     $t3, '0', dlLeftExists
+        li      $t2, 0                  #left does not exist
         j       dlDownCheck
 
 dlLeftExists:
-        lb      $t2, 1                  #left exists
+        li      $t2, 1                  #left exists
 
 dlDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, $zero, dlDownExists#branch if position is not in last line
-	lb	$t4, 0			#down does not exist
+        bne     $t3, '0', dlDownExists  #branch if position is not in last line
+	li	$t4, 0			#down does not exist
 	j	contDl			#jump to continuation of dl
 
 dlDownExists:
@@ -306,8 +306,8 @@ dlDownExists:
 
 contDl:
         and     $t3, $t2, $t4		#verifies both down and left exist
-        bne     $t3, $zero, checkDl	#branch if both exist
-        lb      $v0, 0			#dl does not exist
+        bne     $t3, '0', checkDl	#branch if both exist
+        li      $v0, 0			#dl does not exist
         j       dlExit			#jump to exit
 
 checkDl:
@@ -326,26 +326,26 @@ testdr:
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
         bne     $t3, 79, drRightExists	
-        lb      $t2, 0                  #right does not exist
+        li      $t2, 0                  #right does not exist
         j       drDownCheck		#jumps to checking below $t0
 
 drRightExists:
-        lb      $t2, 1                  #right exists
+        li      $t2, 1                  #right exists
 
 drDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, $zero, drDownExists#branch if position is not in last line
-        lb      $t4, 0			#down does not exist
+        bne     $t3, '0', drDownExists  #branch if position is not in last line
+        li      $t4, 0			#down does not exist
         j       contDr			#jump to continuation of dr
 
 drDownExists:
-        lb      $t4, 1                  #down exists
+        li      $t4, 1                  #down exists
 
 contDr:
         and     $t3, $t2, $t4		#verifies both down and right exist
-        bne     $t3, $zero, checkDr	#branch if both exist
-        lb      $v0, 0			#dr does not exist
+        bne     $t3, '0', checkDr	#branch if both exist
+        li      $v0, 0			#dr does not exist
         j       drExit			#jump to exit
 
 checkDr:
