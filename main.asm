@@ -456,6 +456,8 @@ main:
 
 	jal	readgrid
 	jal	printgrid
+	jal	process
+	jal	printgrid
 
 	li	$v0, 10		# Load exit syscall
 	syscall			# Exit
