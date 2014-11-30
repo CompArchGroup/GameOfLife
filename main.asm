@@ -7,6 +7,9 @@ grid:		.space		4000			# Space for the grid (80x50)
 buffer:		.space		4098			# stores data read
 gridSize:	.word		4000			# size of grid
 bufferSize:	.word		4098			# size of buffer
+newLine:	.asciiz		"\n"
+border:		.asciiz		"-"
+HUD:		.asciiz		"\nStuff will go here when I know what to put here!"
 
 .text
 	j	main
@@ -71,8 +74,57 @@ readgrid:
 # globl void printgrid:
 # Prints the current contents of the grid.
 #
-printgrid:
-	jr	$ra
+printgrid:	
+	lw 	$t2, lwidth 		# load the length of a row into $t2
+	lw 	$t3, grid 		# load the total size of the grid into $t3
+	li	$t0, 0			# initialize $t0, which counts current position in the row
+	li	$t1, 0 			# initialize $t1, which counts current position in the grid
+	j	g_loop			# start the loop
+	
+ g_loop:
+	beq  	$t1, $t3, g_end		# exit if the current position is the last position in the grid
+	beq  	$t0, $t2, g_newRow	# move to the next line if the current position is the last position in the row
+	mul 	$t4, $t1, 4 		# multiply $t1 by 4 to get the offset within the array
+	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
+	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
+	move 	$a0, $t4		# move the value to $a0
+	li	$v0, 4			# syscall for print string
+	syscall				# print the grid value
+	addi 	$t0, $t0, 1		# increment the current position in the row
+	addi 	$t1, $t1, 1		# increment the current position in the grid
+	j 	g_loop			# jump back to the beginning of the loop
+ g_newRow:
+	li	$v0, 4			# syscall for print string
+	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
+	syscall				# move to the next line
+	mul 	$t4, $t1, 4 		# multiply $t1 by 4 to get the offset within the array
+	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
+	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
+	move 	$a0, $t4		# move the value to $a0
+	li	$v0, 4			# syscall for print string
+	syscall				# print the grid value
+	li	$t0, 1			# reset the value of the row
+	addi 	$t1, $t1, 1		# increment the current position in the grid
+	j 	g_loop			# jump back to the beginning of the loop
+ g_end:
+	li	$v0, 4			# syscall for print string
+	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
+	syscall				# move to the next line
+	li	$t0, 0			# $t0 will now record the current position in the line
+	li	$t1, 80			# $t1 will now represent the last position in the line
+g_printBorder:
+	addi 	$t0, $t0, 1		# increment i
+	li	$v0, 4			# syscall for print string
+	la	$a0, border		# stick a "-" symbol in $a0
+	syscall				# draw a single element of the border
+	bne  	$t0, $t1, g_printBorder	# if the end of the line wasn't reached go back to the start of the loop
+	li	$v0, 4			# syscall for print string
+	la	$a0, HUD		#load the HUD into $a0
+	syscall				# draw the HUD
+	
+	li 	$v0, 10 		# replace these two lines with whatever return address you want
+	syscall				# replace these two lines with whatever return address you want
+
 
 #
 # globl bool testdir:
@@ -241,7 +293,7 @@ dlLeftExists:
 dlDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, $zero, dlDownExits #branch if position is not in last line
+        bne     $t3, $zero, dlDownExists#branch if position is not in last line
 	lb	$t4, 0			#down does not exist
 	j	contDl			#jump to continuation of dl
 
@@ -276,10 +328,10 @@ testdr:
 drRightExists:
         lb      $t2, 1                  #right exists
 
-dlDownCheck:
+drDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, $zero, drDownExits #branch if position is not in last line
+        bne     $t3, $zero, drDownExists#branch if position is not in last line
         lb      $t4, 0			#down does not exist
         j       contDr			#jump to continuation of dr
 
