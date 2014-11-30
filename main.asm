@@ -19,6 +19,12 @@ HUD:		.asciiz		"\nStuff will go here when I know what to put here!"
 # Reads in a grid pattern from a file.
 #
 readgrid:
+  # save s registers to stack
+	addi	$sp, $sp, -16		# Move stack pointer
+	sw	$s0, 12($sp)		# Save $s0 to the stack
+	sw	$s1, 8($sp)		# Save $s1 to the stack
+	sw	$s2, 4($sp)		# Save $s2 to the stack
+	sw	$s6, 0($sp)		# Save $s6 to the stack
   # open file
 	li   	$v0, 13       		# open file syscall
 	la   	$a0, file      		# board file name
@@ -68,6 +74,11 @@ readgrid:
 	j	r_loop			# iterate through loop again
 
   r_exit:	
+	lw	$s0, 12($sp)		# Save $s0 to the stack
+	lw	$s1, 8($sp)		# Save $s1 to the stack
+	lw	$s2, 4($sp)		# Save $s2 to the stack
+	lw	$s6, 0($sp)		# Save $s6 to the stack
+	addi	$sp, $sp, 16		# Move stack pointer
 	jr	$ra
 
 #
@@ -446,7 +457,7 @@ main:
 	lw	$s5, lwidth	# Load line width to $s8
 	la	$s6, grid	# Load the first grid address to $s6
 	lw	$t0, gridSize	# Load the size of the grid to $t0
-	add	$s6, $s7, $t0	# Put the first address after the grid in $s7
+	add	$s7, $s6, $t0	# Put the first address after the grid in $s7
 
 	jal	readgrid
 	jal	printgrid
