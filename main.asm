@@ -448,7 +448,8 @@ main:
 	lw	$t0, gridSize	# Load the size of the grid to $t0
 	add	$s6, $s7, $t0	# Put the first address after the grid in $s7
 
-	jal	process
+	jal	readgrid
+	jal	printgrid
 
 	li	$v0, 10		# Load exit syscall
 	syscall			# Exit
