@@ -199,7 +199,7 @@ testright:
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
-        bne     $t3, 79, checkLeft           
+        bne     $t3, 79, checkRight
         li      $v0, 0                  #right does not exist/is not alive
         j       rightExit
 
