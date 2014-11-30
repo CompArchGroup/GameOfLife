@@ -88,7 +88,7 @@ readgrid:
 #
 printgrid:	
 	lw 	$t2, lwidth 		# load the length of a row into $t2
-	lw 	$t3, grid 		# load the total size of the grid into $t3
+	la 	$t3, grid 		# load the total size of the grid into $t3
 	li	$t0, 0			# initialize $t0, which counts current position in the row
 	li	$t1, 0 			# initialize $t1, which counts current position in the grid
 	j	g_loop			# start the loop
