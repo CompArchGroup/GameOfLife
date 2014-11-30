@@ -108,8 +108,7 @@ printgrid:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line
-	li	$t0, 1			# reset the value of the row
-	addi 	$t1, $t1, 1		# increment the current position in the grid
+	li	$t0, 0			# reset the value of the row
 	j 	g_loop			# jump back to the beginning of the loop
  g_end:
 	li	$v0, 4			# syscall for print string
