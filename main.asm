@@ -3,6 +3,7 @@
 .data
 file:		.asciiz		"grid.txt"		# file to be read 
 lwidth:		.word		80			# Width of each line
+.globl grid
 grid:		.space		4000			# Space for the grid (80x50)
 buffer:		.space		4098			# stores data read
 gridSize:	.word		4000			# size of grid
@@ -19,6 +20,12 @@ HUD:		.asciiz		"\nStuff will go here when I know what to put here!"
 # Reads in a grid pattern from a file.
 #
 readgrid:
+  # save s registers to stack
+	addi	$sp, $sp, -16		# Move stack pointer
+	sw	$s0, 12($sp)		# Save $s0 to the stack
+	sw	$s1, 8($sp)		# Save $s1 to the stack
+	sw	$s2, 4($sp)		# Save $s2 to the stack
+	sw	$s6, 0($sp)		# Save $s6 to the stack
   # open file
 	li   	$v0, 13       		# open file syscall
 	la   	$a0, file      		# board file name
@@ -68,6 +75,11 @@ readgrid:
 	j	r_loop			# iterate through loop again
 
   r_exit:	
+	lw	$s0, 12($sp)		# Save $s0 to the stack
+	lw	$s1, 8($sp)		# Save $s1 to the stack
+	lw	$s2, 4($sp)		# Save $s2 to the stack
+	lw	$s6, 0($sp)		# Save $s6 to the stack
+	addi	$sp, $sp, 16		# Move stack pointer
 	jr	$ra
 
 #
@@ -76,7 +88,7 @@ readgrid:
 #
 printgrid:	
 	lw 	$t2, lwidth 		# load the length of a row into $t2
-	lw 	$t3, grid 		# load the total size of the grid into $t3
+	lw 	$t3, gridSize 		# load the total size of the grid into $t3
 	li	$t0, 0			# initialize $t0, which counts current position in the row
 	li	$t1, 0 			# initialize $t1, which counts current position in the grid
 	j	g_loop			# start the loop
@@ -84,11 +96,10 @@ printgrid:
  g_loop:
 	beq  	$t1, $t3, g_end		# exit if the current position is the last position in the grid
 	beq  	$t0, $t2, g_newRow	# move to the next line if the current position is the last position in the row
-	mul 	$t4, $t1, 4 		# multiply $t1 by 4 to get the offset within the array
-	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
-	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
+	add 	$t4, $s6, $t1 		# add base address of array to $t1 to calculate the address of array[$t4]
+	lb 	$t4, 0($t4) 		# $t4 = array[$t4]
 	move 	$a0, $t4		# move the value to $a0
-	li	$v0, 4			# syscall for print string
+	li	$v0, 11			# syscall for print character
 	syscall				# print the grid value
 	addi 	$t0, $t0, 1		# increment the current position in the row
 	addi 	$t1, $t1, 1		# increment the current position in the grid
@@ -97,14 +108,7 @@ printgrid:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line
-	mul 	$t4, $t1, 4 		# multiply $t1 by 4 to get the offset within the array
-	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
-	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
-	move 	$a0, $t4		# move the value to $a0
-	li	$v0, 4			# syscall for print string
-	syscall				# print the grid value
-	li	$t0, 1			# reset the value of the row
-	addi 	$t1, $t1, 1		# increment the current position in the grid
+	li	$t0, 0			# reset the value of the row
 	j 	g_loop			# jump back to the beginning of the loop
  g_end:
 	li	$v0, 4			# syscall for print string
@@ -446,9 +450,12 @@ main:
 	lw	$s5, lwidth	# Load line width to $s8
 	la	$s6, grid	# Load the first grid address to $s6
 	lw	$t0, gridSize	# Load the size of the grid to $t0
-	add	$s6, $s7, $t0	# Put the first address after the grid in $s7
+	add	$s7, $s6, $t0	# Put the first address after the grid in $s7
+  .globl breakpoint
+  breakpoint:
 
-	jal	process
+	jal	readgrid
+	jal	printgrid
 
 	li	$v0, 10		# Load exit syscall
 	syscall			# Exit
