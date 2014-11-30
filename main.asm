@@ -159,7 +159,8 @@ testdown:
 
 	sub	$t3, $t2, $t1		#subtract and see if position is less
 	slt	$t4, $t0, $t3		#than the grid size minus line width
-	bne	$t4, '0', checkDown	#branch if position is not in last line 					 of grid
+	bne	$t4, $zero, checkDown	#branch if position is not in last line
+					#of grid
 	li	$v0, 0			#down is not alive
 	j	downExit		#jump to exit of subroutine
 
