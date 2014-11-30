@@ -126,8 +126,7 @@ g_printBorder:
 	la	$a0, HUD		#load the HUD into $a0
 	syscall				# draw the HUD
 	
-	li 	$v0, 10 		# replace these two lines with whatever return address you want
-	syscall				# replace these two lines with whatever return address you want
+	jr	$ra			# Return
 
 
 #
