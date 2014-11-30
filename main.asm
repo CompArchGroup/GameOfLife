@@ -302,7 +302,7 @@ dlDownCheck:
 	j	contDl			#jump to continuation of dl
 
 dlDownExists:
-        lb      $t4, 1                  #down exists
+        li      $t4, 1                  #down exists
 
 contDl:
         and     $t3, $t2, $t4		#verifies both down and left exist
