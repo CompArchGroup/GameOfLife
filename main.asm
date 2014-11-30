@@ -416,7 +416,7 @@ process:
 	jal	process			# Recurse into process
 
 	lb	$s3, 0($s1)		# Load the current grid value
-	beq	$s3, $zero, p_dead	# Branch to dead if current is dead
+	beq	$s3, '0', p_dead	# Branch to dead if current is dead
   p_alive:
 	slti	$t0, $s0, 4		# You ded with >3 live neighbors
 	beq	$t0, $zero, p_die	# Die with >3 live neighbors
