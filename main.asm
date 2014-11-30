@@ -96,7 +96,7 @@ printgrid:
  g_loop:
 	beq  	$t1, $t3, g_end		# exit if the current position is the last position in the grid
 	beq  	$t0, $t2, g_newRow	# move to the next line if the current position is the last position in the row
-	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
+	add 	$t4, $s6, $t1 		# add base address of array to $t1 to calculate the address of array[$t4]
 	lb 	$t4, 0($t4) 		# $t4 = array[$t4]
 	move 	$a0, $t4		# move the value to $a0
 	li	$v0, 11			# syscall for print character
