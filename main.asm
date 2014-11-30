@@ -388,35 +388,35 @@ process:
 
   p_up:
 	jal	testup			# Test above
-	bne	$v0, $zero, p_upleft	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_upleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upleft:
 	jal	testul			# Test above
-	bne	$v0, $zero, p_left	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_left	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_left:
 	jal	testleft		# Test above
-	bne	$v0, $zero, p_downleft	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_downleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downleft:
 	jal	testdl			# Test above
-	bne	$v0, $zero, p_down	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_down	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_down:
 	jal	testdown		# Test above
-	bne	$v0, $zero, p_downright	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_downright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downright:
 	jal	testdr			# Test above
-	bne	$v0, $zero, p_right	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_right	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_right:
 	jal	testright		# Test above
-	bne	$v0, $zero, p_upright	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_upright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upright:
 	jal	testur			# Test above
-	bne	$v0, $zero, p_endtest	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_endtest	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
 
   p_endtest:
