@@ -88,7 +88,7 @@ readgrid:
 #
 printgrid:	
 	lw 	$t2, lwidth 		# load the length of a row into $t2
-	la 	$t3, grid 		# load the total size of the grid into $t3
+	lw 	$t3, gridSize 		# load the total size of the grid into $t3
 	li	$t0, 0			# initialize $t0, which counts current position in the row
 	li	$t1, 0 			# initialize $t1, which counts current position in the grid
 	j	g_loop			# start the loop
@@ -97,9 +97,9 @@ printgrid:
 	beq  	$t1, $t3, g_end		# exit if the current position is the last position in the grid
 	beq  	$t0, $t2, g_newRow	# move to the next line if the current position is the last position in the row
 	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
-	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
+	lb 	$t4, 0($t4) 		# $t4 = array[$t4]
 	move 	$a0, $t4		# move the value to $a0
-	li	$v0, 4			# syscall for print string
+	li	$v0, 11			# syscall for print character
 	syscall				# print the grid value
 	addi 	$t0, $t0, 1		# increment the current position in the row
 	addi 	$t1, $t1, 1		# increment the current position in the grid
@@ -108,12 +108,6 @@ printgrid:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line
-	mul 	$t4, $t1, 4 		# multiply $t1 by 4 to get the offset within the array
-	add 	$t4, $s6, $t4 		# add base address of array to $t4 to calculate the address of array[$t4]
-	lw 	$t4, 0($t4) 		# $t4 = array[$t4]
-	move 	$a0, $t4		# move the value to $a0
-	li	$v0, 4			# syscall for print string
-	syscall				# print the grid value
 	li	$t0, 1			# reset the value of the row
 	addi 	$t1, $t1, 1		# increment the current position in the grid
 	j 	g_loop			# jump back to the beginning of the loop
