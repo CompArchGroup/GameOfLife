@@ -137,7 +137,7 @@ g_printBorder:
 testup:
 	move 	$t0, $s1	#put grid location into $t0. Shouldn't it be
 				#received in $a0?
-	la	$t1, lwidth		#acquire line width
+	lw	$t1, lwidth		#acquire line width
 
 	slt	$t2, $t0, $t1		#check if location < line width
 	beq	$t2, '0', checkUp	#branch to check above position
@@ -154,8 +154,8 @@ upExit:
 
 testdown:
 	move	$t0, $s1		#put grid location in $t0
-	la	$t1, lwidth		#stores line width in $t1
-	la	$t2, gridSize		#stores grid size in $t2
+	lw	$t1, lwidth		#stores line width in $t1
+	lw	$t2, gridSize		#stores grid size in $t2
 
 	sub	$t3, $t2, $t1		#subtract and see if position is less
 	slt	$t4, $t0, $t3		#than the grid size minus line width
@@ -174,7 +174,7 @@ downExit:
 
 testleft:
 	move	$t0, $s1		#store current position in $t0
-	la	$t1, lwidth		#store line width in $t1
+	lw	$t1, lwidth		#store line width in $t1
 	
 	div	$t0, $t1		#modulus of current position to check if
 	mfhi	$t3			#left is in grid
@@ -192,7 +192,7 @@ leftExit:
 
 testright:
 	move    $t0, $s1                #store current position in $t0
-        la      $t1, lwidth             #store line width in $t1
+        lw      $t1, lwidth             #store line width in $t1
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
@@ -210,7 +210,7 @@ rightExit:
 
 testul:	
 	move	$t0, $s1		#$t0 = current position
-	la	$t1, lwidth		#$t1 = line width
+	lw	$t1, lwidth		#$t1 = line width
 
 	div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
@@ -246,7 +246,7 @@ ulExit:
 
 testur:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t0 = line width
+        lw      $t1, lwidth		#$t0 = line width
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
@@ -282,8 +282,8 @@ urExit:
 
 testdl:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t1 = line width
-	la	$t5, gridSize		#$t5 = gridSize
+        lw      $t1, lwidth		#$t1 = line width
+	lw	$t5, gridSize		#$t5 = gridSize
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
@@ -320,8 +320,8 @@ dlExit:
 	
 testdr:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t1 = line width
-        la      $t5, gridSize		#$t5 = grid size
+        lw      $t1, lwidth		#$t1 = line width
+        lw      $t5, gridSize		#$t5 = grid size
 
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
