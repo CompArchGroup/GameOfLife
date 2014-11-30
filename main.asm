@@ -423,13 +423,13 @@ process:
 	slti	$t0, $s0, 2		# You ded with <2 live neighbors
 	beq	$t0, $zero, p_exit	# If you're still alive, leave it alone
   p_die:
-	li	$s3, 0			# Kill the live cell
+	li	$s3, '0'		# Kill the live cell
 	j	p_exit
   p_dead:
 	li	$t0, 3			# Load 3 into a temporary value
 	bne	$s0, $t0, p_exit	# Stay dead if not 3 neighbors
   p_procreate:
-	li	$s3, 1			# Procreate if exactly 3 live neighbors
+	li	$s3, '1'		# Procreate if exactly 3 live neighbors
 
   p_exit:
 	sb	$s3, 0($s1)		# Store the point in the grid
