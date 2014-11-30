@@ -456,6 +456,7 @@ main:
 
 	jal	readgrid
 	jal	printgrid
+	la	$a0, grid	# Pass the grid as the initial argument of process
 	jal	process
 	jal	printgrid
 
