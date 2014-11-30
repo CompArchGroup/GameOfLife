@@ -3,6 +3,7 @@
 .data
 file:		.asciiz		"grid.txt"		# file to be read 
 lwidth:		.word		80			# Width of each line
+.globl grid
 grid:		.space		4000			# Space for the grid (80x50)
 buffer:		.space		4098			# stores data read
 gridSize:	.word		4000			# size of grid
@@ -458,6 +459,8 @@ main:
 	la	$s6, grid	# Load the first grid address to $s6
 	lw	$t0, gridSize	# Load the size of the grid to $t0
 	add	$s7, $s6, $t0	# Put the first address after the grid in $s7
+  .globl breakpoint
+  breakpoint:
 
 	jal	readgrid
 	jal	printgrid
