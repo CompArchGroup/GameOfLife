@@ -89,7 +89,7 @@ readgrid:
 # Prints the current contents of the grid.
 #
 printgrid:	
-	# $s0 holds number of alive cells
+	move	$s1, $zero		# $s1 holds number of alive cells
 	lw 	$t2, lwidth 		# load the length of a row into $t2
 	lw 	$t3, gridSize 		# load the total size of the grid into $t3
 	li	$t0, 0			# initialize $t0, which counts current position in the row
@@ -111,7 +111,8 @@ printgrid:
 	
   g_if2:	
 	bne	$t4, '1', g_inc		# if cell not alive, go to inc
-
+	
+	addi	$s1, $s1, 1		# add 1 to aliveCount
 	li 	$a0, '@'		# load alive cell character
 	li	$v0, 11			# syscall for print character
 	syscall				# print the grid value
@@ -144,7 +145,7 @@ printgrid:
 	la	$a0, msg1		# load the msg1 into $a0
 	syscall				# draw the msg1
 	li	$v0, 1			# syscall for print string
-	move	$a0, $s0		# load the aliveCount into $a0
+	move	$a0, $s1		# load the aliveCount into $a0
 	syscall				# output aliveCount
 
   # print dead cells
@@ -152,7 +153,7 @@ printgrid:
 	la	$a0, msg2		# load the msg2 into $a0
 	syscall				# draw the msg2
 	li	$v0, 1			# syscall for print string
-	sub	$t7, $t3, $s0		# deadCount = gridSize - aliveCount
+	sub	$t7, $t3, $s1		# deadCount = gridSize - aliveCount
 	move	$a0, $t7		# load the deadCount into $a0
 	syscall				# output deadCount
 	
