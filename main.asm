@@ -10,7 +10,9 @@ gridSize:	.word		4000			# size of grid
 bufferSize:	.word		4098			# size of buffer
 newLine:	.asciiz		"\n"
 border:		.asciiz		"-"
-HUD:		.asciiz		"\nStuff will go here when I know what to put here!"
+msg1:		.asciiz		"\nAlive: "		# message for alive cells
+msg2:		.asciiz		"   Dead: "		# message for dead cells
+msg3:		.asciiz		"   Gen: (add later)"	# message for generation number
 
 .text
 	j	main
@@ -87,6 +89,7 @@ readgrid:
 # Prints the current contents of the grid.
 #
 printgrid:	
+	# $s0 holds number of alive cells
 	lw 	$t2, lwidth 		# load the length of a row into $t2
 	lw 	$t3, gridSize 		# load the total size of the grid into $t3
 	li	$t0, 0			# initialize $t0, which counts current position in the row
@@ -122,12 +125,33 @@ g_printBorder:
 	la	$a0, border		# stick a "-" symbol in $a0
 	syscall				# draw a single element of the border
 	bne  	$t0, $t1, g_printBorder	# if the end of the line wasn't reached go back to the start of the loop
-	li	$v0, 4			# syscall for print string
-	la	$a0, HUD		#load the HUD into $a0
-	syscall				# draw the HUD
 	
-	li 	$v0, 10 		# replace these two lines with whatever return address you want
-	syscall				# replace these two lines with whatever return address you want
+  # print alive cells
+	li	$v0, 4			# syscall for print string
+	la	$a0, msg1		# load the msg1 into $a0
+	syscall				# draw the msg1
+	li	$v0, 1			# syscall for print string
+	move	$a0, $s0		# load the aliveCount into $a0
+	syscall				# output aliveCount
+
+  # print alive cells
+	li	$v0, 4			# syscall for print string
+	la	$a0, msg2		# load the msg2 into $a0
+	syscall				# draw the msg2
+	li	$v0, 1			# syscall for print string
+	sub	$t7, $t3, $s0		# deadCount = gridSize - aliveCount
+	move	$a0, $t7		# load the deadCount into $a0
+	syscall				# output deadCount
+	
+  # print gen number
+	li	$v0, 4			# syscall for print string
+	la	$a0, msg3		# load the msg3 into $a0
+	syscall				# draw the msg3
+	li	$v0, 4			# syscall for print string
+	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
+	syscall				# move to the next line		
+		
+	jr	$ra
 
 
 #
@@ -160,7 +184,7 @@ testdown:
 
 	sub	$t3, $t2, $t1		#subtract and see if position is less
 	slt	$t4, $t0, $t3		#than the grid size minus line width
-	bne	$t4, '0', checkDown	#branch if position is not in last line 					 of grid
+	bne	$t4, '0', checkDown	#branch if position is not in last line of grid
 	li	$v0, 0			#down is not alive
 	j	downExit		#jump to exit of subroutine
 
