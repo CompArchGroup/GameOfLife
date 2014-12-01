@@ -239,6 +239,7 @@ ulLeftExists:
 	li	$t2, 1			#left exists
 	
 ulUpCheck:
+	add	$t0, $t0, $t7		#add back grid address
 	add	$t1, $t1, $t7		#put end of first line in $t1
 	slt     $t3, $t0, $t1           #check if location < line width
         beq     $t3, $zero, ulUpExists  #branch to check above position
@@ -249,13 +250,15 @@ ulUpExists:
 	li	$t4, 1			#up exists
 
 contUl:
+	bne	$s1, 0x10010621, working
+	nop
+  working:
 	and	$t3, $t2, $t4		#if above and left exist, $t3 = 1
 	bne	$t3, $zero, checkUl	#and ul position exists
 	li	$v0, 0			#ul does not exist/ not alive
 	j	ulExit			#jump to exit
 
 checkUl:
-	add	$t0, $t0, $t7		#add back grid address
 	sub	$t1, $t1, $t7		#subtract grid address back
 	addi	$t0, $t0, -1		#moves $t0 left 1
 	sub	$t0, $t0, $t1		#moves $t0 up a line
@@ -282,6 +285,7 @@ rightExists:
 
 urUpCheck:
 	add	$t1, $t1, $t7		#put end of first line in $t1
+	add	$t0, $t0, $t7		#add back grid address
         slt     $t3, $t0, $t1           #check if location < line width
         beq     $t3, $zero, urUpExists	#branch to check above position
         li      $t4, 0                  #up is not alive
@@ -297,7 +301,6 @@ contUr:
         j       urExit			#jump to exit
 
 checkUr:
-	add	$t0, $t0, $t7		#add back grid address
 	sub	$t1, $t1, $t7		#subtract grid address back
 	addi	$t0, $t0, 1		#moves $t0 right by 1
 	sub	$t0, $t0, $t1		#moves $t0 up 1 line
