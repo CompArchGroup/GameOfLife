@@ -342,7 +342,7 @@ contDl:
 checkDl:
 	add	$t0, $t0, $t7		#get position in grid
         addi    $t0, $t0, -1		#moves $t0 left by 1
-        sub     $t0, $t0, $t1		#moves $t0 down 1 line
+        add     $t0, $t0, $t1		#moves $t0 down 1 line
         lb      $v0, 0($t0)		#stores byte in return register
 	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
@@ -384,7 +384,7 @@ contDr:
 checkDr:
 	add	$t0, $t0, $t7		#get position in grid
         addi    $t0, $t0, 1		#move $t0 right by 1
-        sub     $t0, $t0, $t1		#move $t0 down 1 line
+        add     $t0, $t0, $t1		#move $t0 down 1 line
         lb      $v0, 0($t0)		#stores byte in return register
 	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
