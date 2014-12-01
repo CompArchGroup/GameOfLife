@@ -10,9 +10,9 @@ gridSize:	.word		2400			# size of grid
 bufferSize:	.word		2458			# size of buffer
 newLine:	.asciiz		"\n"
 border:		.asciiz		"-"
-msg1:		.asciiz		"\nAlive: "		# message for alive cells
-msg2:		.asciiz		"   Dead: "		# message for dead cells
-msg3:		.asciiz		"   Gen: "		# message for generation number
+msg1:		.asciiz		"\n     Alive: "	# message for alive cells
+msg2:		.asciiz		"       Dead: "		# message for dead cells
+msg3:		.asciiz		"       Gen: "		# message for generation number
 
 .text
 	j	main
