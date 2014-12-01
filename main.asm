@@ -293,9 +293,6 @@ ulUpExists:
 	li	$t4, 1			#up exists
 
 contUl:
-	bne	$s1, 0x10010621, working
-	nop
-  working:
 	and	$t3, $t2, $t4		#if above and left exist, $t3 = 1
 	bne	$t3, $zero, checkUl	#and ul position exists
 	li	$v0, 0			#ul does not exist/ not alive
@@ -532,8 +529,6 @@ main:
 	la	$s6, grid	# Load the first grid address to $s6
 	lw	$t0, gridSize	# Load the size of the grid to $t0
 	add	$s7, $s6, $t0	# Put the first address after the grid in $s7
-  .globl breakpoint
-  breakpoint:
 
 	jal	readgrid	# Read in initial state
 	jal	printgrid	# Print gen 0
