@@ -164,7 +164,7 @@ printgrid:
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line		
 		
-	jr	$ra
+	jr	$ra			# Return
 
 
 #
@@ -175,16 +175,20 @@ printgrid:
 testup:
 	move 	$t0, $s1	#put grid location into $t0. Shouldn't it be
 				#received in $a0?
-	la	$t1, lwidth		#acquire line width
+	lw	$t1, lwidth		#acquire line width
+	la	$t3, grid		#stores grid address in $t3
 
+	add	$t1, $t1, $t3		#put end of first line in $t1
 	slt	$t2, $t0, $t1		#check if location < line width
-	beq	$t2, '0', checkUp	#branch to check above position
+	beq	$t2, $zero, checkUp	#branch to check above position
 	li	$v0, 0			#up is not alive
 	j	upExit			#jump to end of subroutine
 
 checkUp:
+	sub	$t1, $t1, $t3		#subtract grid addess back
 	sub	$t0, $t0, $t1		#place $t0 above its original grid pos.
 	lb	$v0, 0($t0)		#load life value into $v0
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 	j	upExit			#jump to end of subroutine
 
 upExit:
@@ -192,18 +196,22 @@ upExit:
 
 testdown:
 	move	$t0, $s1		#put grid location in $t0
-	la	$t1, lwidth		#stores line width in $t1
-	la	$t2, gridSize		#stores grid size in $t2
+	lw	$t1, lwidth		#stores line width in $t1
+	lw	$t2, gridSize		#stores grid size in $t2
+	la	$t3, grid		#stores grid address in $t3
 
+	add	$t2, $t2, $t3		#put last grid position in $t2
 	sub	$t3, $t2, $t1		#subtract and see if position is less
 	slt	$t4, $t0, $t3		#than the grid size minus line width
-	bne	$t4, '0', checkDown	#branch if position is not in last line of grid
+	bne	$t4, $zero, checkDown	#branch if position is not in last line
+					#of grid
 	li	$v0, 0			#down is not alive
 	j	downExit		#jump to exit of subroutine
 
 checkDown:
 	add	$t0, $t0, $t1		#$t0 = position below current position
 	lb	$v0, 0($t0)		#store life value in return register $v0
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 	j	downExit		#jump to exit of down subroutine
 
 downExit:
@@ -211,17 +219,21 @@ downExit:
 
 testleft:
 	move	$t0, $s1		#store current position in $t0
-	la	$t1, lwidth		#store line width in $t1
+	lw	$t1, lwidth		#store line width in $t1
+	la	$t2, grid		#store grid address in $t2
 	
+	sub	$t0, $t0, $t2		#get position in grid
 	div	$t0, $t1		#modulus of current position to check if
 	mfhi	$t3			#left is in grid
-	bne	$t3, '0', checkLeft		
+	bne	$t3, $zero, checkLeft		
 	li	$v0, 0			#left does not exist/is not alive
 	j	leftExit
 
 checkLeft:
+	add	$t0, $t0, $t2		#add grid back into current value
 	addi	$t0, $t0, -1		#$t0 = position left of current position
 	lb	$v0, 0($t0)		#load life value into return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 	j	leftExit
 
 leftExit:
@@ -229,17 +241,21 @@ leftExit:
 
 testright:
 	move    $t0, $s1                #store current position in $t0
-        la      $t1, lwidth             #store line width in $t1
+        lw      $t1, lwidth             #store line width in $t1
+	la	$t2, grid		#store grid address in $t2
 
+	sub	$t0, $t0, $t2		#get position in grid
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
-        bne     $t3, 79, checkLeft           
+        bne     $t3, 79, checkRight
         li      $v0, 0                  #right does not exist/is not alive
         j       rightExit
 
 checkRight:
+	add	$t0, $t0, $t2		#add grid back into current value
         addi    $t0, $t0, 1		#$t0 = position right of current pos.
         lb      $v0, 0($t0)             #load life value into return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
         j       rightExit
 
 rightExit:
@@ -247,11 +263,13 @@ rightExit:
 
 testul:	
 	move	$t0, $s1		#$t0 = current position
-	la	$t1, lwidth		#$t1 = line width
+	lw	$t1, lwidth		#$t1 = line width
+	la	$t7, grid		#store grid address in $t2
 
+	sub	$t0, $t0, $t7		#get position in grid
 	div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
-        bne     $t3, '0', ulLeftExists
+        bne     $t3, $zero, ulLeftExists
         li      $t2, 0                  #left does not exist
 	j	ulUpCheck		#jump to checking above current pos.
 
@@ -259,8 +277,10 @@ ulLeftExists:
 	li	$t2, 1			#left exists
 	
 ulUpCheck:
+	add	$t0, $t0, $t7		#add back grid address
+	add	$t1, $t1, $t7		#put end of first line in $t1
 	slt     $t3, $t0, $t1           #check if location < line width
-        beq     $t3, '0', ulUpExists  #branch to check above position
+        beq     $t3, $zero, ulUpExists  #branch to check above position
         li      $t4, 0                  #up is not alive
         j       contUl                  #jump to end of subroutine
 
@@ -268,23 +288,30 @@ ulUpExists:
 	li	$t4, 1			#up exists
 
 contUl:
+	bne	$s1, 0x10010621, working
+	nop
+  working:
 	and	$t3, $t2, $t4		#if above and left exist, $t3 = 1
-	bne	$t3, '0', checkUl	#and ul position exists
+	bne	$t3, $zero, checkUl	#and ul position exists
 	li	$v0, 0			#ul does not exist/ not alive
 	j	ulExit			#jump to exit
 
 checkUl:
+	sub	$t1, $t1, $t7		#subtract grid address back
 	addi	$t0, $t0, -1		#moves $t0 left 1
 	sub	$t0, $t0, $t1		#moves $t0 up a line
 	lb	$v0, 0($t0)		#stores byte at $t0 into return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
 ulExit:
 	jr	$ra
 
 testur:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t0 = line width
+        lw      $t1, lwidth		#$t0 = line width
+	la	$t7, grid		#store grid address in $t7
 
+	sub	$t0, $t0, $t7		#get position in grid
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
         bne     $t3, 79, rightExists	#branches if pos. to right of $t0 exists
@@ -295,8 +322,10 @@ rightExists:
         li      $t2, 1                  #right exists
 
 urUpCheck:
+	add	$t1, $t1, $t7		#put end of first line in $t1
+	add	$t0, $t0, $t7		#add back grid address
         slt     $t3, $t0, $t1           #check if location < line width
-        beq     $t3, '0', urUpExists  #branch to check above position
+        beq     $t3, $zero, urUpExists	#branch to check above position
         li      $t4, 0                  #up is not alive
         j       contUr                  #jump to continuation of testing ur
 
@@ -305,26 +334,30 @@ urUpExists:
 
 contUr:
         and     $t3, $t2, $t4		#verifies both up and right exist
-        bne     $t3, '0', checkUr	#branch if up and right exist
+        bne     $t3, $zero, checkUr	#branch if up and right exist
         li      $v0, 0			#ur does not exist
         j       urExit			#jump to exit
 
 checkUr:
+	sub	$t1, $t1, $t7		#subtract grid address back
 	addi	$t0, $t0, 1		#moves $t0 right by 1
 	sub	$t0, $t0, $t1		#moves $t0 up 1 line
 	lb	$v0, 0($t0)		#stores byte in return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
 urExit:
 	jr	$ra
 
 testdl:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t1 = line width
-	la	$t5, gridSize		#$t5 = gridSize
+        lw      $t1, lwidth		#$t1 = line width
+	lw	$t5, gridSize		#$t5 = gridSize
+	la	$t7, grid		#store grid address in $t2
 
+	sub	$t0, $t0, $t7		#get position in grid
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #left is in grid
-        bne     $t3, '0', dlLeftExists
+        bne     $t3, $zero, dlLeftExists
         li      $t2, 0                  #left does not exist
         j       dlDownCheck
 
@@ -334,32 +367,36 @@ dlLeftExists:
 dlDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, '0', dlDownExists  #branch if position is not in last line
+        bne     $t3, $zero, dlDownExists#branch if position is not in last line
 	li	$t4, 0			#down does not exist
 	j	contDl			#jump to continuation of dl
 
 dlDownExists:
-        lb      $t4, 1                  #down exists
+        li      $t4, 1                  #down exists
 
 contDl:
         and     $t3, $t2, $t4		#verifies both down and left exist
-        bne     $t3, '0', checkDl	#branch if both exist
+        bne     $t3, 0, checkDl		#branch if both exist
         li      $v0, 0			#dl does not exist
         j       dlExit			#jump to exit
 
 checkDl:
+	add	$t0, $t0, $t7		#get position in grid
         addi    $t0, $t0, -1		#moves $t0 left by 1
-        sub     $t0, $t0, $t1		#moves $t0 down 1 line
+        add     $t0, $t0, $t1		#moves $t0 down 1 line
         lb      $v0, 0($t0)		#stores byte in return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
 dlExit:
 	jr	$ra
 	
 testdr:
 	move    $t0, $s1		#$t0 = current position
-        la      $t1, lwidth		#$t1 = line width
-        la      $t5, gridSize		#$t5 = grid size
+        lw      $t1, lwidth		#$t1 = line width
+        lw      $t5, gridSize		#$t5 = grid size
+	la	$t7, grid		#store grid address in $t2
 
+	sub	$t0, $t0, $t7		#get position in grid
         div     $t0, $t1                #modulus of current position to check if
         mfhi    $t3                     #right is in grid
         bne     $t3, 79, drRightExists	
@@ -372,7 +409,7 @@ drRightExists:
 drDownCheck:
         sub     $t5, $t5, $t1           #subtract and see if position is less
         slt     $t3, $t0, $t5           #than the grid size minus line width
-        bne     $t3, '0', drDownExists  #branch if position is not in last line
+        bne     $t3, 0, drDownExists  #branch if position is not in last line
         li      $t4, 0			#down does not exist
         j       contDr			#jump to continuation of dr
 
@@ -386,9 +423,11 @@ contDr:
         j       drExit			#jump to exit
 
 checkDr:
+	add	$t0, $t0, $t7		#get position in grid
         addi    $t0, $t0, 1		#move $t0 right by 1
-        sub     $t0, $t0, $t1		#move $t0 down 1 line
+        add     $t0, $t0, $t1		#move $t0 down 1 line
         lb      $v0, 0($t0)		#stores byte in return register
+	addi	$v0, $v0, -0x30		#subtract '0' from char to get a bool
 
 drExit:
 	jr	$ra
@@ -417,35 +456,35 @@ process:
 
   p_up:
 	jal	testup			# Test above
-	bne	$v0, $zero, p_upleft	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_upleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upleft:
 	jal	testul			# Test above
-	bne	$v0, $zero, p_left	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_left	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_left:
 	jal	testleft		# Test above
-	bne	$v0, $zero, p_downleft	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_downleft	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downleft:
 	jal	testdl			# Test above
-	bne	$v0, $zero, p_down	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_down	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_down:
 	jal	testdown		# Test above
-	bne	$v0, $zero, p_downright	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_downright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_downright:
 	jal	testdr			# Test above
-	bne	$v0, $zero, p_right	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_right	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_right:
 	jal	testright		# Test above
-	bne	$v0, $zero, p_upright	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_upright	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
   p_upright:
 	jal	testur			# Test above
-	bne	$v0, $zero, p_endtest	# Branch to avoid adding to alive
+	beq	$v0, $zero, p_endtest	# Branch to avoid adding to alive
 	addi	$s0, $s0, 1		# Add one to alive count
 
   p_endtest:
@@ -453,20 +492,20 @@ process:
 	jal	process			# Recurse into process
 
 	lb	$s3, 0($s1)		# Load the current grid value
-	beq	$s3, $zero, p_dead	# Branch to dead if current is dead
+	beq	$s3, '0', p_dead	# Branch to dead if current is dead
   p_alive:
 	slti	$t0, $s0, 4		# You ded with >3 live neighbors
 	beq	$t0, $zero, p_die	# Die with >3 live neighbors
 	slti	$t0, $s0, 2		# You ded with <2 live neighbors
 	beq	$t0, $zero, p_exit	# If you're still alive, leave it alone
   p_die:
-	li	$s3, 0			# Kill the live cell
+	li	$s3, '0'		# Kill the live cell
 	j	p_exit
   p_dead:
 	li	$t0, 3			# Load 3 into a temporary value
 	bne	$s0, $t0, p_exit	# Stay dead if not 3 neighbors
   p_procreate:
-	li	$s3, 1			# Procreate if exactly 3 live neighbors
+	li	$s3, '1'		# Procreate if exactly 3 live neighbors
 
   p_exit:
 	sb	$s3, 0($s1)		# Store the point in the grid
@@ -492,6 +531,9 @@ main:
   breakpoint:
 
 	jal	readgrid
+	jal	printgrid
+	la	$a0, grid	# Pass the grid as the initial argument of process
+	jal	process
 	jal	printgrid
 
 	li	$v0, 10		# Load exit syscall
