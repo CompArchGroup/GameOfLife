@@ -4,10 +4,10 @@
 file:		.asciiz		"grid.txt"		# file to be read 
 lwidth:		.word		80			# Width of each line
 .globl grid
-grid:		.space		4000			# Space for the grid (80x50)
-buffer:		.space		4098			# stores data read
-gridSize:	.word		4000			# size of grid
-bufferSize:	.word		4098			# size of buffer
+grid:		.space		2400			# Space for the grid (80x50)
+buffer:		.space		2458			# stores data read
+gridSize:	.word		2400			# size of grid
+bufferSize:	.word		2458			# size of buffer
 newLine:	.asciiz		"\n"
 border:		.asciiz		"-"
 msg1:		.asciiz		"\nAlive: "		# message for alive cells
