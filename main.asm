@@ -96,30 +96,43 @@ printgrid:
 	li	$t1, 0 			# initialize $t1, which counts current position in the grid
 	j	g_loop			# start the loop
 	
- g_loop:
+  g_loop:
 	beq  	$t1, $t3, g_end		# exit if the current position is the last position in the grid
 	beq  	$t0, $t2, g_newRow	# move to the next line if the current position is the last position in the row
 	add 	$t4, $s6, $t1 		# add base address of array to $t1 to calculate the address of array[$t4]
 	lb 	$t4, 0($t4) 		# $t4 = array[$t4]
-	move 	$a0, $t4		# move the value to $a0
+	
+  g_if1:
+	bne	$t4, '0', g_if2		# if cell is not dead, go to second if statement
+	
+	li 	$a0, ' '		# load dead cell character
 	li	$v0, 11			# syscall for print character
 	syscall				# print the grid value
+	
+  g_if2:	
+	bne	$t4, '1', g_inc		# if cell not alive, go to inc
+
+	li 	$a0, '@'		# load alive cell character
+	li	$v0, 11			# syscall for print character
+	syscall				# print the grid value
+	
+  g_inc:
 	addi 	$t0, $t0, 1		# increment the current position in the row
 	addi 	$t1, $t1, 1		# increment the current position in the grid
 	j 	g_loop			# jump back to the beginning of the loop
- g_newRow:
+  g_newRow:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line
 	li	$t0, 0			# reset the value of the row
 	j 	g_loop			# jump back to the beginning of the loop
- g_end:
+  g_end:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line
 	li	$t0, 0			# $t0 will now record the current position in the line
 	li	$t1, 80			# $t1 will now represent the last position in the line
-g_printBorder:
+  g_printBorder:
 	addi 	$t0, $t0, 1		# increment i
 	li	$v0, 4			# syscall for print string
 	la	$a0, border		# stick a "-" symbol in $a0
