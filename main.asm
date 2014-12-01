@@ -12,7 +12,7 @@ newLine:	.asciiz		"\n"
 border:		.asciiz		"-"
 msg1:		.asciiz		"\n     Alive: "	# message for alive cells
 msg2:		.asciiz		"       Dead: "		# message for dead cells
-msg3:		.asciiz		"       Gen: "		# message for generation number
+msg3:		.asciiz		"       Generation: "	# message for generation number
 
 .text
 	j	main
@@ -535,14 +535,14 @@ main:
   .globl breakpoint
   breakpoint:
 
-	jal	readgrid
-	jal	printgrid
-	li	$s0, 0
+	jal	readgrid	# Read in initial state
+	jal	printgrid	# Print gen 0
+	li	$s0, 1		# Initialize generation number to 1
   gameloop:
 	la	$a0, grid	# Pass the grid as the initial argument of process
 	jal	process
 	jal	printgrid
-	addi	$s0, $s0, 1
+	addi	$s0, $s0, 1	# Increment generation number
 	j	gameloop
 	li	$v0, 10		# Load exit syscall
 	syscall			# Exit
