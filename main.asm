@@ -12,7 +12,7 @@ newLine:	.asciiz		"\n"
 border:		.asciiz		"-"
 msg1:		.asciiz		"\nAlive: "		# message for alive cells
 msg2:		.asciiz		"   Dead: "		# message for dead cells
-msg3:		.asciiz		"   Gen: (add later)"	# message for generation number
+msg3:		.asciiz		"   Gen: "		# message for generation number
 
 .text
 	j	main
@@ -147,7 +147,7 @@ printgrid:
 	move	$a0, $s0		# load the aliveCount into $a0
 	syscall				# output aliveCount
 
-  # print alive cells
+  # print dead cells
 	li	$v0, 4			# syscall for print string
 	la	$a0, msg2		# load the msg2 into $a0
 	syscall				# draw the msg2
@@ -160,6 +160,10 @@ printgrid:
 	li	$v0, 4			# syscall for print string
 	la	$a0, msg3		# load the msg3 into $a0
 	syscall				# draw the msg3
+	li	$v0, 1			# syscall for print string
+	move	$a0, $s0		# load the aliveCount into $a0
+	syscall				# output aliveCount
+
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line		
@@ -532,9 +536,12 @@ main:
 
 	jal	readgrid
 	jal	printgrid
+	li	$s0, 0
+  gameloop:
 	la	$a0, grid	# Pass the grid as the initial argument of process
 	jal	process
 	jal	printgrid
-
+	addi	$s0, $s0, 1
+	j	gameloop
 	li	$v0, 10		# Load exit syscall
 	syscall			# Exit
