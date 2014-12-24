@@ -1,0 +1,36 @@
+.data
+# file will contain an mxn grid of @'s and spaces; ' ' = dead, @ = alive
+file:		.asciiz		"fileName"		# file to be read from
+grid:		.byte		0:m*n			# array of values from file 
+										# to be stored in row-major order
+buffer:		.space		bufferSize		# stores data read
+
+.text
+main:
+# load array
+	la		$a3, grid		# load base address of grid into $a3
+	move	$t0, $zero		# load index of array into $t0 (begins at 0)
+	
+# open file
+	li   	$v0, 13       	# open file syscall
+	la   	$a0, fin      	# board file name
+	li   	$a1, 0        	# flags
+	li   	$a2, 0		  	# open for reading
+	syscall               	# open the file
+	move 	$s6, $v0      	# save the file descriptor 
+
+# read from file
+	li   	$v0, 14       	# read from file syscall
+	move 	$a0, $s6      	# file descriptor 
+	la   	$a1, buffer   	# address of buffer to store read data
+	li   	$a2, m*n bytes 	# max buffer length
+	syscall            		# read from file
+
+# close file
+	li   $v0, 16       		# close file syscall
+	move $a0, $s6      		# file descriptor to close
+	syscall            		# close file
+	
+# setting up array
+FOR LOOP:
+	loops through chars in buffer and inputs them into array ($a3)

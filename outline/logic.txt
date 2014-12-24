@@ -1,0 +1,13 @@
+store all used s registers to stack
+check each direction
+increment counter temporary register each time
+store in stack:
+    return address currently stored in $ra
+step current address forward
+recursive call
+(Recurses to the end)
+decrement current address
+pull from stack:
+    return address
+update current character as alive / dead
+restore s registers

@@ -1,0 +1,9 @@
+Read in word from file at current position
+Test to see if word is equal to zero
+If so, output " ". Elsewise, output "@"
+When the end of a row is reached, jump to the next line
+When the 49th line is reached, output a line of "-"
+For the 50th row, output
+  number alive
+  number dead
+  turn number

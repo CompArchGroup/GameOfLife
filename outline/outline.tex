@@ -1,0 +1,99 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{verbatim}
+
+\author{Eric Dilmore, Andrew Julian, Corrin Thompson, and Ian Brown}
+\title{Final Project Update: The Game of Life}
+\date{October 6, 2014}
+
+\begin{document}
+  \maketitle
+
+  \section{Introduction}
+  So far, we have decided on an interface and we have written pseudocode for
+  each of the four sections of our project: file IO, array management, program
+  logic, and interface output.
+
+  We will address each of these in turn.
+
+  \section{Text Interface (as a group)}
+  \label{s:interface}
+  The grid will be \(80 \times 50\) characters. Each row will end with a
+  newline. Another line will be used to display the HUD, with stats about the
+  current game. The stats we plan to track are the number of living cells, the
+  number of dead cells, and the current turn. The following several lines is a
+  sample output of one single step. (Prototype output made by Andrew.)
+
+  \verbatiminput{interface.txt}
+
+  Each step should take up 52 lines, and the program will assume that the
+  terminal is 52 lines high.
+
+  Each step will take approximately one tenth of a second so that the user can
+  see the results of each step. Eventually, it may be possible to speed up or
+  slow down this rate.
+
+  \section{Pseudocode}
+  \subsection{File IO (Corrin)}
+  This opens a file for reading, reads the starting position from the file, and
+  closes the text file. The values will either be space or @ characters and will
+  be parsed into a boolean grid.
+
+  \verbatiminput{readFromFilePseudocode.txt}
+
+  \subsection{Array Management (Ian)}
+  There need to be functions that check adjacent cells to tell whether they are
+  alive or dead. These functions will do address calculations on the current
+  address and put either a one or a zero in \verb-$v0-.
+
+  \verbatiminput{ArrayManagementPseudo.txt}
+
+  \subsection{Game Logic (Eric)}
+  For every turn, the game must loop through each of the cells and check in the
+  four cardinal directions and the four diagonals to test how many adjacent
+  cells are alive and are dead. Then, the current cell must be turned either on
+  or off based on the number of adjacent cells touching it.
+
+  This will be a recursively called function, with the recursion in between when
+  the calculation is done and the grid itself is updated. The calculated value
+  will be stored in an s register, which will be stored on the stack at the
+  beginning of every recursive call and restored to its previous value at the
+  end of that function.
+
+  As you recurse down, you must also put the return address on the stack in
+  order to preserve the call stack. 
+
+  \verbatiminput{logic.txt}
+
+  \subsection{Interface Output (Andrew)}
+
+  The output function will display to the console what is described in Section
+  \ref{s:interface}. It will loop over every byte in the grid array and
+  translate a boolean dead/alive value to either a space or an @ symbol.
+
+  \verbatiminput{interfacePseudocode.txt}
+
+  \section{Outcomes}
+  We have not yet tested our program, as we do not have actual code yet. This
+  should be tested as soon as we learn proper function calls.
+
+  \section{Changes From Proposal}
+  Nothing has been changed at this stage in the project.
+
+  \section{Next Steps}
+  \subsection{File IO (Corrin)}
+  Corrin will make the file input loop, looping through each character and
+  deciding whether it is on or off. She will also test the loop using MARS.
+  \subsection{Array Management (Ian)}
+  Ian will translate the pseudocode into MIPS assembly code and test it with
+  sample arrays.
+  \subsection{Game Logic (Eric)}
+  Eric will translate his pseudocode into MIPS assembly code. Due to its
+  reliance on array management, he will not test the code directly. However,
+  the recursion will be tested for resiliance.
+  \subsection{Interface Output (Andrew)}
+  Andrew will translate his pseudocode into MIPS assembly code and test it with
+  sample arrays.
+
+\end{document}

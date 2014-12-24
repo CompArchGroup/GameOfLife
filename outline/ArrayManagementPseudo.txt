@@ -1,0 +1,47 @@
+Left Function:
+	calculate address to left by subtracting 1 byte from current address
+	load address of the cell to the left in temp register
+	load life value (1 for alive, 0 for dead) to the left into temp register
+	return life value
+	
+Left-Up Function:
+	calculate diagonal address by subtracting 1 byte from the current address and subtracting the line width from current address
+	load left-up address in a temp register
+	load life value of left-up address into a temp register
+	return life value
+	
+Up Function:
+	calculate up address by subtracting the line width from current address
+	load up address in a temp register
+	load life value of left-up address into a temp register
+	return life value
+	
+Right-Up Function:
+	calculate diagonal address by adding 1 byte to the current address and subtracting the line width from current address
+	load right-up address in a temp register
+	load life value of right-up address into a temp register
+	return life value
+	
+Right Function:
+	calculate address to right by adding 1 byte from current address
+	load address of the cell to the right in temp register
+	load life value (1 for alive, 0 for dead) to the right into temp register
+	return life value
+	
+Right-Down Function:
+	calculate diagonal address by adding 1 byte to the current address and adding the line width to the current address
+	load right-down address in a temp register
+	load life value of right-down address into a temp register
+	return life value
+	
+Down Function:
+	calculate down address by the the line width to the current address
+	load up address in a temp register
+	load life value of left-up address into a temp register
+	return life value
+	
+Left-Down Function:
+	calculate diagonal address by subtracting 1 byte from the current address and adding the line width to the current address
+	load left-down address in a temp register
+	load life value of left-down address into a temp register
+	return life value
