@@ -89,6 +89,9 @@ readgrid:
 # Prints the current contents of the grid.
 #
 printgrid:	
+	addi	$sp, $sp, -4		# shift the stack
+	sw	$s1, 0($sp)		# push to stack
+
 	move	$s1, $zero		# $s1 holds number of alive cells
 	lw 	$t2, lwidth 		# load the length of a row into $t2
 	lw 	$t3, gridSize 		# load the total size of the grid into $t3
@@ -168,6 +171,9 @@ printgrid:
 	li	$v0, 4			# syscall for print string
 	la	$a0, newLine		# load a "\n" into $a0 to move to the next line
 	syscall				# move to the next line		
+	
+	lw	$s1, 0($sp)		# pop stack
+	addi	$sp, $sp, 4		# shift stack
 		
 	jr	$ra			# Return
 
